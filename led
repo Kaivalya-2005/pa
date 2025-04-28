@@ -1,0 +1,21 @@
+#include <xc.h>  // Include header file for XC compiler (specific to PIC microcontrollers)
+
+// Function to create a delay
+void delay(unsigned int time){
+    int i, j;
+    for(i = 0; i < time; i++){
+        for(j = 0; j < 5000; j++){}; // Inner loop for time delay (software delay)
+    }
+}
+
+void main(void) {
+    TRISB = 0x00;  // Set all PORTB pins as output
+    LATB = 0xAA;   // Initialize LATB with 0xAA (10101010 in binary)
+
+    while(1){  // Infinite loop
+        LATB = ~LATB;   // Toggle all bits of LATB (invert the output)
+        delay(20);      // Call delay function to wait for some time
+    }
+    
+    return; // (Optional) Return from main (though infinite loop prevents reaching here)
+}
