@@ -1,0 +1,33 @@
+#include <xc.h>
+#include <pic18f4550.h>
+
+// Configuration Bits
+#pragma config FOSC = HS, WDT = OFF, LVP = OFF, BOR = OFF
+#define _XTAL_FREQ 8000000
+
+volatile unsigned char relayState = 0; // 0 = OFF, 1 = ON
+
+void initSystem(void) {
+    TRISBbits.TRISB1 = 1;    // RB1 as input (INT1)
+    TRISAbits.TRISA4 = 0;    // RA4 as output (Relay)
+    LATAbits.LATA4 = 0;      // Relay OFF
+    
+    INTCON3bits.INT1IE = 1;  // Enable INT1 interrupt
+    INTCON3bits.INT1IF = 0;  // Clear INT1 interrupt flag
+    INTCON2bits.INTEDG1 = 0; // Falling edge interrupt
+    
+    GIE = 1;                 // Enable global interrupts
+    PEIE = 1;                // Enable peripheral interrupts
+}
+
+void __interrupt() ISR(void) {
+    if (INTCON3bits.INT1IF) {     
+        LATAbits.LATA4 = relayState = !relayState; // Toggle relay
+        INTCON3bits.INT1IF = 0;    
+    }
+}
+
+void main(void) {
+    initSystem();
+    while(1);
+}
