@@ -1,0 +1,58 @@
+#include <xc.h>
+
+// Bubble sort function for ascending order
+void sortAscending(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Bubble sort function for descending order
+void sortDescending(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (arr[j] < arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void main() {
+    int numbers[4] = {4, 1, 3, 2}; // Static array of numbers
+    int choice = 0;               // Variable to store sorting choice (ascending/descending)
+
+    // Configure ports
+    TRISE = 0x01; // Set RE0 as input for sorting choice (digital pin)
+    TRISA = 0x00; // Set PORTA as output
+    TRISB = 0x00; // Set PORTB as output
+    TRISC = 0x00; // Set PORTC as output
+    TRISD = 0x00; // Set PORTD as output
+
+    // Main loop
+    while (1) {
+        // Read sorting choice from RE0
+        choice = LATE & 0x01; // Mask other bits, read only RE0
+
+        // Perform sorting based on choice
+        if (choice == 0) {
+            sortAscending(numbers, 4); // Sort in ascending order
+        } else if (choice == 1) {
+            sortDescending(numbers, 4); // Sort in descending order
+        }
+
+        // Output sorted numbers
+        PORTA = numbers[0];
+        PORTB = numbers[1];
+        PORTC = numbers[2];
+        PORTD = numbers[3];
+    }
+}
